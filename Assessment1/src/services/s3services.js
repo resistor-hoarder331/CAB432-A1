@@ -6,17 +6,14 @@ const multerS3 = require('multer-s3');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 
-const bucketName = 'n11539861-A1';
+const bucketName = 'n11539861-assessment1-bucket';
 const qutUsername = 'n11539861@qut.edu.au';
 const purpose = 'Assessment1';
 
-// Create S3 client using SDK v3
+// Create S3 client using SDK v3 with IAM role
 const s3Client = new S3Client({ 
-  region: process.env.AWS_REGION || 'ap-southeast-2',
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-  }
+  region: process.env.AWS_REGION || 'ap-southeast-2'
+  // No credentials needed - IAM role will provide them
 });
 
 // Initialize bucket with tags (call this once when app starts)
@@ -99,7 +96,7 @@ const videoUpload = multer({
   }),
   fileFilter: fileFilter,
   limits: {
-    fileSize: 100 * 1024 * 1024, // 100MB limit for videos
+    fileSize: 500 * 1024 * 1024, // 500MB limit for videos
   }
 });
 
@@ -116,7 +113,7 @@ const audioUpload = multer({
   }),
   fileFilter: fileFilter,
   limits: {
-    fileSize: 20 * 1024 * 1024, // 20MB limit for audio
+    fileSize: 100 * 1024 * 1024, // 100MB limit for audio
   }
 });
 
@@ -185,6 +182,3 @@ module.exports = {
   s3Client,
   bucketName
 };
-
-//**
-//  */

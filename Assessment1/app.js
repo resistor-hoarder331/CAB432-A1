@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 // Import routes
 const authRoutes = require('./src/routes/auth');
 const userRoutes = require('./src/routes/users');
+const videoRoutes = require('./src/routes/video');
 
 // Load environment variables
 dotenv.config();
@@ -20,6 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/videos', videoRoutes);
 
 // Basic health check
 app.get('/', (req, res) => {
@@ -37,9 +39,11 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log('In-memory user system initialized');
+  console.log('Available test users:');
+  console.log('- john@example.com (password: password123)');
+  console.log('- sarah@example.com (password: password123)');
+  console.log('- mike@example.com (password: password123)');
+  console.log('- admin@example.com (password: password123)');
+  console.log('- test@example.com (password: password123)');
 });
-
-const videoRoutes = require('./src/routes/video');
-
-// Add after other routes
-app.use('/api/videos', videoRoutes);

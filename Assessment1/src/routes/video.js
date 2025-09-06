@@ -1,7 +1,7 @@
 const express = require('express');
 const { videoUpload, getPublicUrl, deleteFile } = require('../services/s3services');
 const { authenticateToken } = require('../middleware/auth');
-const Video = require('../models/video');
+const Video = require('../models/InMemoryVideo'); // Changed from './models/video'
 
 const router = express.Router();
 
@@ -32,7 +32,7 @@ router.post('/upload', authenticateToken, (req, res) => {
         });
       }
 
-      // Create video record in database
+      // Create video record in memory
       const videoId = await Video.create({
         user_id: req.user.id,
         title,
@@ -167,7 +167,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     // Delete from S3
     await deleteFile(video.s3_key);
 
-    // Delete from database
+    // Delete from memory
     const deleted = await Video.delete(id, req.user.id);
 
     if (deleted) {

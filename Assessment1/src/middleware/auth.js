@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const User = require('../models/InMemoryUser'); 
 
 // Middleware to verify JWT token
 const authenticateToken = async (req, res, next) => {
@@ -15,7 +15,7 @@ const authenticateToken = async (req, res, next) => {
     }
 
     // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
     
     // Get user details
     const user = await User.findById(decoded.userId);
@@ -26,8 +26,13 @@ const authenticateToken = async (req, res, next) => {
       });
     }
 
-    // Add user to request object
-    req.user = user;
+    // Add user to request object (with role from the full user object)
+    req.user = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role
+    };
     next();
   } catch (error) {
     console.error('Auth middleware error:', error);

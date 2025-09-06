@@ -1,6 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const User = require('../models/InMemoryUser'); // Changed from './models/User'
 
 const router = express.Router();
 
@@ -47,8 +47,8 @@ router.post('/register', async (req, res) => {
     // Generate JWT
     const token = jwt.sign(
       { userId, username, role },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN }
+      process.env.JWT_SECRET || 'fallback-secret',
+      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
     );
 
     res.status(201).json({
@@ -105,8 +105,8 @@ router.post('/login', async (req, res) => {
     // Generate JWT
     const token = jwt.sign(
       { userId: user.id, username: user.username, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN }
+      process.env.JWT_SECRET || 'fallback-secret',
+      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
     );
 
     res.json({
@@ -129,7 +129,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Verify token (useful for frontend to check if token is still valid)
+// Verify token
 router.get('/verify', async (req, res) => {
   try {
     const authHeader = req.headers['authorization'];
@@ -142,7 +142,7 @@ router.get('/verify', async (req, res) => {
       });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
     const user = await User.findById(decoded.userId);
 
     if (!user) {

@@ -1,5 +1,5 @@
 const express = require('express');
-const User = require('../models/User');
+const User = require('../models/InMemoryUser'); 
 const { authenticateToken, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
